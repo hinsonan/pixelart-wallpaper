@@ -1,0 +1,13 @@
+{
+    "KPlugin": {
+        "Id": "com.example.pixelart",
+        "Name": "Pixel Art Wallpaper",
+        "Description": "Random pixel art wallpapers from Wallhaven API or local folder",
+        "Authors": [{ "Name": "Your Name" }],
+        "Category": "Wallpaper",
+        "License": "GPL-3.0+",
+        "Version": "1.0",
+        "Icon": "preferences-desktop-wallpaper"
+    },
+    "KPackageStructure": "Plasma/Wallpaper"
+}
