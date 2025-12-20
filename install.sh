@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Pixel Art Wallpaper Plugin Installer
+# =====================================
+# Installs the KDE Plasma 6 wallpaper plugin to ~/.local/share/plasma/wallpapers/
+
 PLUGIN_ID="com.example.pixelart"
 INSTALL_DIR="$HOME/.local/share/plasma/wallpapers/$PLUGIN_ID"
 
@@ -25,6 +29,7 @@ fi
 # Create directories
 echo "📁 Creating directories..."
 mkdir -p "$INSTALL_DIR/contents/ui"
+mkdir -p "$INSTALL_DIR/contents/ui/components"
 mkdir -p "$INSTALL_DIR/contents/config"
 
 # Copy files
@@ -32,12 +37,14 @@ echo "📋 Copying files..."
 cp "$SCRIPT_DIR/metadata.json" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/contents/ui/main.qml" "$INSTALL_DIR/contents/ui/"
 cp "$SCRIPT_DIR/contents/ui/config.qml" "$INSTALL_DIR/contents/ui/"
+cp "$SCRIPT_DIR/contents/ui/components/WallhavenAPI.qml" "$INSTALL_DIR/contents/ui/components/"
 cp "$SCRIPT_DIR/contents/config/main.xml" "$INSTALL_DIR/contents/config/"
 
 # Verify
 echo "✅ Checking installation..."
 ls -la "$INSTALL_DIR/"
 ls -la "$INSTALL_DIR/contents/ui/"
+ls -la "$INSTALL_DIR/contents/ui/components/"
 ls -la "$INSTALL_DIR/contents/config/"
 
 echo ""

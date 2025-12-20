@@ -1,189 +1,304 @@
-# Pixel Art Wallpaper Plugin for KDE Plasma
+# Pixel Art Wallpaper Plugin for KDE Plasma 6
 
-A KDE Plasma wallpaper plugin that displays random pixel art wallpapers from [Wallhaven](https://wallhaven.cc) or from a local folder.
+<div align="center">
+
+A beautiful KDE Plasma 6 wallpaper plugin that brings stunning pixel art wallpapers to your desktop from [Wallhaven](https://wallhaven.cc).
+
+![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)
+![KDE Plasma](https://img.shields.io/badge/KDE%20Plasma-6-blue.svg)
+![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)
+
+[Features](#features) • [Installation](#installation) • [Usage](#usage) • [Configuration](#configuration) • [Troubleshooting](#troubleshooting)
+
+</div>
+
+---
+
+## Screenshots
+
+<div align="center">
+
+### Example Wallpapers
+
+<table>
+  <tr>
+    <td><img src="https://w.wallhaven.cc/full/8o/wallhaven-8oky1j.jpg" width="400" alt="Pixel Art Cyberpunk City"/><br/><sub>Cyberpunk Cityscape</sub></td>
+    <td><img src="https://w.wallhaven.cc/full/zp/wallhaven-zpp3mg.png" width="400" alt="Pixel Art Nature Lake"/><br/><sub>Moonlit Lake</sub></td>
+  </tr>
+  <tr>
+    <td><img src="https://w.wallhaven.cc/full/wq/wallhaven-wq2r8p.png" width="400" alt="Pixel Art Space Stars"/><br/><sub>Space & Stars</sub></td>
+    <td><img src="https://w.wallhaven.cc/full/je/wallhaven-jeeq3q.png" width="400" alt="Pixel Art Romantic Scene"/><br/><sub>Starry Night</sub></td>
+  </tr>
+</table>
+
+*All wallpapers sourced from [Wallhaven.cc](https://wallhaven.cc)*
+
+</div>
+
+---
 
 ## Features
 
-- 🎲 **Random Wallpapers** - Get a new random pixel art wallpaper with one click
-- 🌐 **Wallhaven API** - Fetch wallpapers from wallhaven.cc (no API key required!)
-- 📁 **Local Folder Support** - Use your own collection of images
-- ⏰ **Auto-Change** - Automatically change wallpaper at set intervals
-- 🔍 **Search Queries** - Customize what type of pixel art you want
-- 🎨 **Pixel-Perfect** - Option to disable smoothing for crisp pixel art
-- ✨ **Smooth Transitions** - Crossfade animation between wallpapers
+- **Random Wallpapers** - Get a new random pixel art wallpaper with one click
+- **Wallhaven API Integration** - Fetch wallpapers from wallhaven.cc (no API key required)
+- **Customizable Searches** - Search by keywords, categories, and content ratings
+- **Multiple Presets** - Quick access to popular pixel art styles (Cyberpunk, Nature, Space, Anime)
+- **Quality Control** - Filter by minimum resolution (720p to 4K)
+- **Smart Display** - Multiple fill modes to perfectly fit your screen
+- **Content Filtering** - SFW-only mode or SFW + Sketchy options
+- **Pure QML** - Lightweight and native to KDE Plasma
+
+---
+
+## Requirements
+
+- **KDE Plasma 6** (Plasma 5 is not supported)
+- **Qt 6**
+- **Internet connection** (for Wallhaven API mode)
+- **Linux** (Arch, Ubuntu, Fedora, etc.)
+
+---
 
 ## Installation
 
-### Quick Install
+### Quick Install (Recommended)
 
-```bash
-# Clone or download this repository
-cd pixelart-wallpaper
+1. **Clone or download this repository:**
+   ```bash
+   git clone https://github.com/yourusername/pixelart-wallpaper.git
+   cd pixelart-wallpaper
+   ```
 
-# Make install script executable and run it
-chmod +x install.sh
-./install.sh
-```
+2. **Run the installation script:**
+   ```bash
+   chmod +x install.sh
+   ./install.sh
+   ```
 
-### Manual Install
+3. **The script will:**
+   - Install the plugin to `~/.local/share/plasma/wallpapers/com.example.pixelart/`
+   - Prompt you to restart Plasma Shell
+   - Type `y` to restart automatically
+
+4. **Apply the wallpaper:**
+   - Right-click on your desktop
+   - Select **Configure Desktop and Wallpaper**
+   - Choose **Pixel Art Wallpaper** from the **Wallpaper Type** dropdown
+
+### Manual Installation
+
+If you prefer to install manually:
 
 ```bash
 # Create plugin directory
-mkdir -p ~/.local/share/plasma/wallpapers/com.example.pixelart-wallpaper/contents/ui
+mkdir -p ~/.local/share/plasma/wallpapers/com.example.pixelart
 
-# Copy files
-cp metadata.json ~/.local/share/plasma/wallpapers/com.example.pixelart-wallpaper/
-cp contents/ui/*.qml ~/.local/share/plasma/wallpapers/com.example.pixelart-wallpaper/contents/ui/
+# Copy plugin files
+cp -r metadata.json contents ~/.local/share/plasma/wallpapers/com.example.pixelart/
 
-# Restart Plasma
-kquitapp5 plasmashell && kstart5 plasmashell
+# Restart Plasma Shell
+killall plasmashell && plasmashell &
 ```
 
+---
+
 ## Usage
+
+### Getting Started
 
 1. **Right-click** on your desktop
 2. Select **Configure Desktop and Wallpaper**
 3. In the **Wallpaper Type** dropdown, select **Pixel Art Wallpaper**
-4. Configure your settings:
-   - Choose between **Wallhaven API** or **Local Folder**
-   - Set your search query (for API mode)
-   - Set auto-change interval
-5. Click **"Get New Random Wallpaper"** button to fetch a new wallpaper
+4. Configure your preferences (see [Configuration](#configuration))
+5. Click **Apply** to save
 
-## Configuration Options
+### Getting New Wallpapers
 
-### Source Options
+Click the **Get New Random Wallpaper** button in the settings panel, then click **Apply** to load it.
 
-| Option | Description |
-|--------|-------------|
-| **Wallhaven API** | Fetch wallpapers from wallhaven.cc |
-| **Local Folder** | Use images from a folder on your computer |
+---
 
-### API Settings (Wallhaven mode)
+## Configuration
 
-| Setting | Description |
-|---------|-------------|
-| **Search Query** | Keywords to search for (e.g., "pixel art", "8bit retro") |
-| **Categories** | General, Anime, People, or combinations |
-| **Content Filter** | SFW only, or SFW + Sketchy |
-| **Sorting** | Random, Latest, Most Viewed, etc. |
-| **Min Resolution** | Minimum image resolution (720p to 4K) |
+### Search Settings
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| **Search Query** | Keywords to search for | `pixel art` |
+| **Categories** | General, Anime, or both | `General + Anime` |
+| **Content Filter** | Content rating (SFW only or SFW + Sketchy) | `SFW only` |
+| **Sorting** | Random, Latest, Most Viewed, Top Rated | `Random` |
+| **Min Resolution** | Minimum image resolution | `1920x1080` |
+
+### Quick Presets
+
+Use the preset buttons for instant theme changes:
+
+- **Pixel Art** - General pixel art
+- **8-Bit** - Retro 8-bit style
+- **Cyberpunk** - Neon cities and cyberpunk themes
+- **Nature** - Landscapes and natural scenes
+- **Space** - Cosmic and space-themed art
+- **Anime** - Anime-style pixel art
 
 ### Display Settings
 
-| Setting | Description |
-|---------|-------------|
-| **Fill Mode** | How the image fills the screen (Crop, Fit, Stretch, etc.) |
-| **Smooth Scaling** | Enable/disable smoothing (disable for crisp pixel art!) |
+| Setting | Options | Recommended |
+|---------|---------|-------------|
+| **Fill Mode** | Stretch, Fit, Crop, Tile, Center | **Crop** |
 
-### Timer Settings
+**Tip:** Use **Crop** fill mode for best results with most wallpapers.
 
-| Setting | Description |
-|---------|-------------|
-| **Change Interval** | How often to auto-change (15min to Daily, or Never) |
+### Content Filters Explained
 
-## Quick Presets
+- **SFW only** (`100`): Only safe-for-work content
+- **SFW + Sketchy** (`110`): Includes suggestive but not explicit content
 
-The config panel includes quick preset buttons:
-- **Pixel Art** - General pixel art
-- **8-Bit** - Retro 8-bit style
-- **Cyberpunk** - Cyberpunk pixel art cities
-- **Nature** - Pixel art landscapes
-- **Space** - Space and stars pixel art
-- **Anime** - Anime-style pixel art
+The three-digit code represents: `[SFW][Sketchy][NSFW]`
+- `1` = include
+- `0` = exclude
 
-## Local Folder Setup
+---
 
-1. Create a folder with your pixel art images:
-   ```bash
-   mkdir -p ~/Pictures/pixel-wallpapers
-   ```
-
-2. Add your images (supported formats: PNG, JPG, JPEG, GIF, WebP, BMP)
-
-3. In the plugin settings:
-   - Set **Wallpaper Source** to "Local Folder"
-   - Click **Browse** and select your folder
-   - Or manually enter the path (e.g., `file:///home/user/Pictures/pixel-wallpapers`)
-
-## Tips
+## Tips & Tricks
 
 ### For Best Pixel Art Display
 
-1. **Disable Smooth Scaling** - This keeps pixels crisp and blocky
-2. **Use "Preserve Aspect Crop"** - Fills the screen without distortion
-3. **Use PNG images** - Avoids JPEG compression artifacts
+1. **Use Crop fill mode** - Fills the screen without distortion
+2. **Set minimum resolution** to match or exceed your screen resolution
+3. **Use specific search terms** for better results
 
 ### Recommended Search Queries
+
+Try these search queries for amazing results:
 
 - `pixel art landscape` - Scenic pixel art
 - `pixel art cyberpunk neon` - Neon city vibes
 - `pixel art space galaxy` - Cosmic scenes
 - `pixel art forest` - Nature and forests
 - `pixel art sunset` - Sunset scenes
+- `pixel art castle` - Medieval and fantasy
 - `retro game` - Classic game-style art
+- `isometric pixel art` - Isometric perspective art
+
+---
 
 ## Troubleshooting
 
-### Plugin doesn't appear in wallpaper type list
-```bash
-# Make sure files are in the right place
-ls -la ~/.local/share/plasma/wallpapers/com.example.pixelart-wallpaper/
+### Plugin Doesn't Appear in Wallpaper List
 
-# Restart Plasma
-kquitapp5 plasmashell && kstart5 plasmashell
+```bash
+# Verify installation
+ls -la ~/.local/share/plasma/wallpapers/com.example.pixelart/
+
+# Should show: metadata.json, contents/
+
+# Restart Plasma Shell
+killall plasmashell && plasmashell &
 ```
 
-### No wallpapers loading (API mode)
-- Check your internet connection
-- Try a different search query
-- Check the terminal for errors: `journalctl -f | grep -i plasma`
+### No Wallpapers Loading
 
-### Local folder not working
-- Make sure the path starts with `file://`
-- Example: `file:///home/username/Pictures/wallpapers`
-- Check that images are in supported formats
-
-### View debug output
+**Check internet connection:**
 ```bash
-# Watch Plasma logs
+curl -I https://wallhaven.cc
+```
+
+**Try different search queries** - Some searches may return no results
+
+**View debug logs:**
+```bash
+journalctl -f | grep -i qml
+```
+
+### Wallpaper Not Updating After Clicking Button
+
+Make sure to click **Apply** after clicking "Get New Random Wallpaper" button.
+
+### Check Plugin Logs
+
+```bash
+# Watch for QML errors
 journalctl -f | grep -i qml
 
-# Or run in a test window (limited functionality)
-qmlscene ~/.local/share/plasma/wallpapers/com.example.pixelart-wallpaper/contents/ui/main.qml
+# Watch Plasma logs
+journalctl -f | grep -i plasma
 ```
+
+---
 
 ## Uninstallation
 
+### Using the Script
+
 ```bash
-# Using the script
 chmod +x uninstall.sh
 ./uninstall.sh
-
-# Or manually
-rm -rf ~/.local/share/plasma/wallpapers/com.example.pixelart-wallpaper
-kquitapp6 plasmashell && kstart plasmashell &
 ```
+
+### Manual Removal
+
+```bash
+rm -rf ~/.local/share/plasma/wallpapers/com.example.pixelart
+killall plasmashell && plasmashell &
+```
+
+---
 
 ## File Structure
 
 ```
 pixelart-wallpaper/
-├── metadata.json          # Plugin metadata
-├── install.sh             # Installation script
-├── uninstall.sh           # Uninstallation script
-├── README.md              # This file
+├── metadata.json              # Plugin metadata
+├── install.sh                 # Installation script
+├── uninstall.sh               # Uninstallation script
+├── LICENSE                    # GPL-3.0 license
+├── README.md                  # This file
+├── CLAUDE.md                  # Developer documentation
 └── contents/
+    ├── config/
+    │   └── main.xml          # Configuration schema
     └── ui/
-        ├── main.qml       # Main wallpaper display logic
-        └── config.qml     # Settings panel UI
+        ├── main.qml          # Main wallpaper display logic
+        └── config.qml        # Settings panel UI
 ```
+
+---
+
+## Development
+
+### For Developers
+
+See [CLAUDE.md](CLAUDE.md) for detailed development documentation including:
+- Architecture overview
+- Component structure
+- Configuration flow
+- Debugging techniques
+- Testing procedures
+
+### Making Changes
+
+1. Edit QML files in `contents/ui/`
+2. Run `./install.sh` to reinstall
+3. Restart Plasma Shell: `killall plasmashell && plasmashell &`
+4. Check logs: `journalctl -f | grep -i qml`
+
+---
 
 ## Credits
 
-- Wallpapers provided by [Wallhaven.cc](https://wallhaven.cc)
-- Built for KDE Plasma
+- **Wallpapers** provided by [Wallhaven.cc](https://wallhaven.cc)
+- **Built for** [KDE Plasma](https://kde.org/plasma-desktop/)
+- **QML Framework** by Qt
+
+---
 
 ## License
 
-GPL-3.0+
+This project is licensed under the **GPL-3.0** License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## Support
+
+Found a bug or have a feature request? Please open an issue on GitHub!
