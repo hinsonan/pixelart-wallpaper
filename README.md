@@ -267,15 +267,6 @@ pixelart-wallpaper/
 
 ## Development
 
-### For Developers
-
-See [CLAUDE.md](CLAUDE.md) for detailed development documentation including:
-- Architecture overview
-- Component structure
-- Configuration flow
-- Debugging techniques
-- Testing procedures
-
 ### Making Changes
 
 1. Edit QML files in `contents/ui/`
