@@ -65,7 +65,7 @@ A beautiful KDE Plasma 6 wallpaper plugin that brings stunning pixel art wallpap
 
 1. **Clone or download this repository:**
    ```bash
-   git clone https://github.com/yourusername/pixelart-wallpaper.git
+   git clone https://github.com/hinsonan/pixelart-wallpaper.git
    cd pixelart-wallpaper
    ```
 
@@ -91,10 +91,10 @@ If you prefer to install manually:
 
 ```bash
 # Create plugin directory
-mkdir -p ~/.local/share/plasma/wallpapers/com.example.pixelart
+mkdir -p ~/.local/share/plasma/wallpapers/com.github.hinsonan.pixelart
 
 # Copy plugin files
-cp -r metadata.json contents ~/.local/share/plasma/wallpapers/com.example.pixelart/
+cp -r metadata.json contents ~/.local/share/plasma/wallpapers/com.github.hinsonan.pixelart/
 
 # Restart Plasma Shell
 killall plasmashell && plasmashell &
@@ -189,7 +189,7 @@ Try these search queries for amazing results:
 
 ```bash
 # Verify installation
-ls -la ~/.local/share/plasma/wallpapers/com.example.pixelart/
+ls -la ~/.local/share/plasma/wallpapers/com.github.hinsonan.pixelart/
 
 # Should show: metadata.json, contents/
 
@@ -239,7 +239,7 @@ chmod +x uninstall.sh
 ### Manual Removal
 
 ```bash
-rm -rf ~/.local/share/plasma/wallpapers/com.example.pixelart
+rm -rf ~/.local/share/plasma/wallpapers/com.github.hinsonan.pixelart
 killall plasmashell && plasmashell &
 ```
 

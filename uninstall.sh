@@ -3,7 +3,7 @@
 # Pixel Art Wallpaper Plugin Uninstaller
 # =======================================
 
-PLUGIN_ID="com.example.pixelart"
+PLUGIN_ID="com.github.hinsonan.pixelart"
 INSTALL_DIR="$HOME/.local/share/plasma/wallpapers/$PLUGIN_ID"
 
 echo "╔═══════════════════════════════════════════╗"

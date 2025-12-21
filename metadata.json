@@ -1,13 +1,17 @@
 {
     "KPlugin": {
-        "Id": "com.example.pixelart",
+        "Id": "com.github.hinsonan.pixelart",
         "Name": "Pixel Art Wallpaper",
         "Description": "Random pixel art wallpapers from Wallhaven API or local folder",
-        "Authors": [{ "Name": "Your Name" }],
+        "Authors": [{
+            "Name": "Andrew Hinson",
+            "Email": "hinsonan@gmail.com"
+        }],
         "Category": "Wallpaper",
         "License": "GPL-3.0+",
         "Version": "1.0",
-        "Icon": "preferences-desktop-wallpaper"
+        "Icon": "preferences-desktop-wallpaper",
+        "Website": "https://github.com/hinsonan/pixelart-wallpaper"
     },
     "KPackageStructure": "Plasma/Wallpaper"
 }
