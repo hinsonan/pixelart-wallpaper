@@ -15,6 +15,14 @@ QtObject {
     signal errorOccurred(string errorMessage)
     signal fetchStarted()
 
+    function setHeaderSafe(xhr, key, value) {
+        try {
+            xhr.setRequestHeader(key, value)
+        } catch (e) {
+            // Some headers may be blocked depending on Qt runtime.
+        }
+    }
+
     // Expose the URL building logic for testing
     function buildApiUrl(query, cats, pur, sort, resolution) {
         var url = "https://wallhaven.cc/api/v1/search?"
@@ -39,6 +47,9 @@ QtObject {
         var xhr = new XMLHttpRequest()
         xhr.open("GET", url)
         xhr.timeout = 15000
+        setHeaderSafe(xhr, "Accept", "application/json")
+        setHeaderSafe(xhr, "Accept-Language", "en-US,en;q=0.9")
+        setHeaderSafe(xhr, "User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
 
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE) {
@@ -54,8 +65,10 @@ QtObject {
                     } catch (e) {
                         errorOccurred("Parse error: " + e.message)
                     }
+                } else if (xhr.status === 403) {
+                    errorOccurred("API Error: 403 (forbidden). Wallhaven rejected the request.")
                 } else {
-                    errorOccurred("API Error: " + xhr.status)
+                    errorOccurred("API Error: " + xhr.status + (xhr.statusText ? " (" + xhr.statusText + ")" : ""))
                 }
             }
         }

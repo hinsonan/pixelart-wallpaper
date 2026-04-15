@@ -19,12 +19,18 @@ if [ -d "$INSTALL_DIR" ]; then
     rm -rf "$INSTALL_DIR"
 fi
 
-# Also remove old version with different ID if exists
-OLD_INSTALL="$HOME/.local/share/plasma/wallpapers/com.example.pixelart-wallpaper"
-if [ -d "$OLD_INSTALL" ]; then
-    echo "🗑️  Removing old version..."
-    rm -rf "$OLD_INSTALL"
-fi
+# Also remove old versions with legacy IDs if they exist
+OLD_INSTALLS=(
+    "$HOME/.local/share/plasma/wallpapers/com.example.pixelart-wallpaper"
+    "$HOME/.local/share/plasma/wallpapers/com.example.pixelart"
+)
+
+for old_install in "${OLD_INSTALLS[@]}"; do
+    if [ -d "$old_install" ]; then
+        echo "🗑️  Removing old version: $old_install"
+        rm -rf "$old_install"
+    fi
+done
 
 # Create directories
 echo "📁 Creating directories..."
