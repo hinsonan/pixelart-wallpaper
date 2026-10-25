@@ -7,6 +7,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
+import "components"
 
 Kirigami.ScrollablePage {
     id: root
@@ -22,7 +23,13 @@ Kirigami.ScrollablePage {
     property alias cfg_Sorting: sortingCombo.currentValue
     property alias cfg_MinResolution: resolutionCombo.currentValue
     property alias cfg_FillMode: fillModeCombo.currentIndex
+    property alias cfg_NewWallpaperOnLogin: newWallpaperOnLogin.checked
     property int cfg_RefreshTrigger: 0
+
+    // Read-only access to the wallpaper that is currently on screen.
+    WallpaperState {
+        id: wallpaperState
+    }
 
     Kirigami.FormLayout {
         id: formLayout
@@ -171,7 +178,37 @@ Kirigami.ScrollablePage {
 
         Item { Kirigami.FormData.isSection: true }
 
+        // === STARTUP ===
+        CheckBox {
+            id: newWallpaperOnLogin
+            Kirigami.FormData.label: i18n("Startup:")
+            text: i18n("Load a new random wallpaper on login")
+            checked: true
+        }
+
+        Label {
+            Kirigami.FormData.label: " "
+            text: i18n("Locking the screen or suspending keeps the current wallpaper.")
+            font.italic: true
+            opacity: 0.7
+            wrapMode: Text.WordWrap
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 24
+        }
+
+        Item { Kirigami.FormData.isSection: true }
+
         // === INFO ===
+        Label {
+            Kirigami.FormData.label: i18n("Current:")
+            text: wallpaperState.lastImageUrl !== ""
+                  ? wallpaperState.lastImageUrl.replace(/^.*\//, "")
+                  : i18n("None loaded yet")
+            font: Kirigami.Theme.smallFont
+            opacity: 0.7
+            elide: Text.ElideMiddle
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 22
+        }
+
         Label {
             text: i18n("Wallpapers from wallhaven.cc")
             font.italic: true

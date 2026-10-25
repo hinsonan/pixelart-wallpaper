@@ -13,6 +13,26 @@ echo "╚═══════════════════════�
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# --restart / --no-restart make this script usable from automation.
+AUTO_RESTART=""
+for arg in "$@"; do
+    case "$arg" in
+        --restart) AUTO_RESTART="y" ;;
+        --no-restart) AUTO_RESTART="n" ;;
+        -h|--help)
+            echo "Usage: $0 [--restart|--no-restart]"
+            echo ""
+            echo "  --restart     reinstall and restart Plasma (detached from this terminal)"
+            echo "  --no-restart  reinstall only (default when stdin is not a terminal)"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $arg (try --help)" >&2
+            exit 2
+            ;;
+    esac
+done
+
 # Remove old installation
 if [ -d "$INSTALL_DIR" ]; then
     echo "🗑️  Removing old installation..."
@@ -44,6 +64,8 @@ cp "$SCRIPT_DIR/metadata.json" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/contents/ui/main.qml" "$INSTALL_DIR/contents/ui/"
 cp "$SCRIPT_DIR/contents/ui/config.qml" "$INSTALL_DIR/contents/ui/"
 cp "$SCRIPT_DIR/contents/ui/components/WallhavenAPI.qml" "$INSTALL_DIR/contents/ui/components/"
+cp "$SCRIPT_DIR/contents/ui/components/WallpaperState.qml" "$INSTALL_DIR/contents/ui/components/"
+cp "$SCRIPT_DIR/contents/ui/components/RetryPolicy.qml" "$INSTALL_DIR/contents/ui/components/"
 cp "$SCRIPT_DIR/contents/config/main.xml" "$INSTALL_DIR/contents/config/"
 
 # Verify
@@ -59,17 +81,79 @@ echo ""
 echo "📍 Installed to: $INSTALL_DIR"
 echo ""
 echo "Next steps:"
-echo "  1. Restart Plasma: killall plasmashell && plasmashell &"
+echo "  1. Restart Plasma (see below, or run: ./install.sh --restart)"
 echo "  2. Right-click desktop → Configure Desktop and Wallpaper"
 echo "  3. Select 'Pixel Art Wallpaper' from Wallpaper Type"
 echo ""
 
-read -p "Restart Plasma now? (y/n) " -n 1 -r
-echo
+# ---------------------------------------------------------------------------
+# Restarting Plasma
+#
+# IMPORTANT: never run `plasmashell &` from this script. A background job
+# inherits this terminal, so plasmashell would
+#   * keep printing QML logs into it (which looks like a hung terminal), and
+#   * stay attached to it, so closing the terminal can take the desktop down.
+#
+# Instead either let systemd own it (if it already does) or start it in its
+# own session with no controlling terminal and no inherited stdio.
+# ---------------------------------------------------------------------------
+restart_plasma() {
+    local unit="plasma-plasmashell.service"
+    local i
+
+    if systemctl --user is-active --quiet "$unit" 2>/dev/null; then
+        echo "🔄 Restarting Plasma via systemd ($unit)..."
+        systemctl --user restart "$unit"
+        sleep 2
+        pgrep -x plasmashell >/dev/null 2>&1
+        return $?
+    fi
+
+    echo "🔄 Restarting Plasma..."
+
+    if command -v pkill >/dev/null 2>&1; then
+        pkill -x plasmashell 2>/dev/null
+    else
+        killall plasmashell 2>/dev/null
+    fi
+
+    # Wait for the old instance (and its org.kde.plasmashell D-Bus name) to go.
+    for i in $(seq 1 20); do
+        pgrep -x plasmashell >/dev/null 2>&1 || break
+        sleep 0.25
+    done
+
+    if command -v setsid >/dev/null 2>&1; then
+        setsid plasmashell </dev/null >/dev/null 2>&1 &
+    else
+        nohup plasmashell </dev/null >/dev/null 2>&1 &
+    fi
+    disown 2>/dev/null || true
+
+    for i in $(seq 1 20); do
+        pgrep -x plasmashell >/dev/null 2>&1 && return 0
+        sleep 0.25
+    done
+    return 1
+}
+
+# --restart / --no-restart make this script usable from automation.
+if [ -n "$AUTO_RESTART" ]; then
+    REPLY="$AUTO_RESTART"
+elif [ -t 0 ]; then
+    read -p "Restart Plasma now? (y/n) " -n 1 -r
+    echo
+else
+    REPLY="n"
+fi
+
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo "🔄 Restarting..."
-    killall plasmashell 2>/dev/null
-    sleep 1
-    plasmashell &
-    disown
+    if restart_plasma; then
+        echo "✅ Plasma restarted (detached from this terminal)."
+        echo "   Logs: journalctl --user -b -f | grep -i -E 'plasmashell|qml'"
+    else
+        echo "⚠️  Could not restart Plasma automatically."
+        echo "   Start it manually with:"
+        echo "     setsid plasmashell </dev/null >/dev/null 2>&1 &"
+    fi
 fi

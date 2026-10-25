@@ -46,6 +46,8 @@ A beautiful KDE Plasma 6 wallpaper plugin that brings stunning pixel art wallpap
 - **Quality Control** - Filter by minimum resolution (720p to 4K)
 - **Smart Display** - Multiple fill modes to perfectly fit your screen
 - **Content Filtering** - SFW-only mode or SFW + Sketchy options
+- **Never Blank** - The last wallpaper is restored instantly and only swapped once a new image has fully loaded
+- **Self-Healing** - Network and image failures are retried automatically with backoff
 - **Pure QML** - Lightweight and native to KDE Plasma
 
 ---
@@ -116,6 +118,17 @@ killall plasmashell && plasmashell &
 
 Click the **Get New Random Wallpaper** button in the settings panel, then click **Apply** to load it.
 
+### When does the wallpaper change?
+
+- **Login** - a new random wallpaper is fetched once per login session
+  (disable with **Startup → Load a new random wallpaper on login**).
+- **Refresh button** - always fetches a new wallpaper immediately.
+- **Locking the screen, suspending/resuming, switching virtual desktops** -
+  the current wallpaper is kept. Nothing is re-downloaded.
+- The new wallpaper is only shown **after it has fully loaded**, so the desktop
+  never goes blank. If the request fails it is retried automatically
+  (2s, 4s, 8s ... up to 30s apart).
+
 ---
 
 ## Configuration
@@ -148,6 +161,16 @@ Use the preset buttons for instant theme changes:
 | **Fill Mode** | Stretch, Fit, Crop, Tile, Center | **Crop** |
 
 **Tip:** Use **Crop** fill mode for best results with most wallpapers.
+
+### Startup Settings
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| **Load a new random wallpaper on login** | Fetch a fresh wallpaper once per login session. When disabled, the last wallpaper is kept until you use the refresh button. | Enabled |
+
+Locking the screen or suspending the machine never triggers a new download, and
+the settings panel shows the file name of the wallpaper that is currently on
+screen.
 
 ### Content Filters Explained
 
@@ -211,6 +234,27 @@ curl -I https://wallhaven.cc
 journalctl -f | grep -i qml
 ```
 
+### Wallpaper is blank after login, unlock or resume
+
+The plugin restores the last wallpaper from disk and retries failed requests on
+its own, so this should recover within a few seconds. If it does not:
+
+```bash
+# What the plugin remembers (last image + thumbnail)
+cat ~/.config/com.github.hinsonan.pixelart.conf
+
+# Session marker; deleting it makes the next Plasma start fetch a new image
+ls -l "$XDG_RUNTIME_DIR/pixelart-wallpaper-session.conf"
+```
+
+The settings panel also shows which image file is currently displayed.
+
+### Wallpaper is blank right after installing
+
+The very first wallpaper needs a successful request. If the network was not up
+yet, the plugin keeps retrying (2s, 4s, 8s ... 30s). You can also press
+**Get New Random Wallpaper** in the settings panel.
+
 ### Wallpaper Not Updating After Clicking Button
 
 Make sure to click **Apply** after clicking "Get New Random Wallpaper" button.
@@ -260,7 +304,11 @@ pixelart-wallpaper/
     │   └── main.xml          # Configuration schema
     └── ui/
         ├── main.qml          # Main wallpaper display logic
-        └── config.qml        # Settings panel UI
+        ├── config.qml        # Settings panel UI
+        └── components/
+            ├── WallhavenAPI.qml   # API requests, timeout and result picking
+            ├── WallpaperState.qml # Persisted wallpaper + session marker
+            └── RetryPolicy.qml    # Exponential backoff policy
 ```
 
 ---
@@ -273,6 +321,22 @@ pixelart-wallpaper/
 2. Run `./install.sh` to reinstall
 3. Restart Plasma Shell: `killall plasmashell && plasmashell &`
 4. Check logs: `journalctl -f | grep -i qml`
+
+### Notes for maintainers
+
+- The QML `XMLHttpRequest` has **no** `timeout`, `ontimeout` or `onerror`
+  members. `WallhavenAPI.qml` implements its own timeout with a `Timer` plus
+  `abort()`, and reads all failures from `onreadystatechange`
+  (`status === 0` means a network failure).
+- Components that contain child objects (`Settings`, `Timer`) must be `Item`s,
+  not `QtObject`s: `QtObject` has no default `data` property and refuses to
+  load such a file.
+- `StandardPaths.writableLocation()` returns a `QUrl`. `QtCore.Settings`
+  expects one for its `location` property, which is why `WallpaperState.qml`
+  uses `location` instead of a file name.
+- The hidden probe image in `main.qml` must keep the same geometry and
+  `fillMode` as the visible image. Qt keys its image cache on the requested
+  size, so a differently configured probe causes a second download.
 
 ---
 

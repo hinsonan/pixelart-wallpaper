@@ -24,6 +24,9 @@
     <entry name="FillMode" type="Int">
       <default>2</default>
     </entry>
+    <entry name="NewWallpaperOnLogin" type="Bool">
+      <default>true</default>
+    </entry>
     <entry name="RefreshTrigger" type="Int">
       <default>0</default>
     </entry>
